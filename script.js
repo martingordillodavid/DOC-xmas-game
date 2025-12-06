@@ -513,4 +513,29 @@ function init() {
         startGame();
     });
 
-    btn
+    btnLeftEl.addEventListener("click", () => {
+        movePlayer(-1);
+    });
+
+    btnRightEl.addEventListener("click", () => {
+        movePlayer(1);
+    });
+
+    // Soporte teclado (por si alguien lo abre en PC)
+    window.addEventListener("keydown", (e) => {
+        if (state.currentPhase !== PHASES.OBSTACLES) return;
+        if (e.key === "ArrowLeft") {
+            movePlayer(-1);
+        } else if (e.key === "ArrowRight") {
+            movePlayer(1);
+        } else if (e.key === " " || e.key === "Enter") {
+            if (!gameState.running) startGame();
+        }
+    });
+
+    // Empezar en Fase 1
+    startQuizPhase1();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+

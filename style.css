@@ -92,6 +92,7 @@ body {
     gap: 8px;
 }
 
+/* Botones generales */
 .btn {
     border: none;
     border-radius: 999px;
@@ -100,8 +101,12 @@ body {
     font-weight: 500;
     cursor: pointer;
     text-align: center;
-    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease,
-        color 0.15s ease, opacity 0.15s ease;
+    transition:
+        transform 0.1s ease,
+        box-shadow 0.1s ease,
+        background-color 0.15s ease,
+        color 0.15s ease,
+        opacity 0.15s ease;
 }
 
 .btn-full {
@@ -123,6 +128,12 @@ body {
     cursor: default;
     box-shadow: none;
     transform: none;
+}
+
+.btn-secondary {
+    background: #0f172a;
+    color: #e5e7eb;
+    border: 1px solid #1f2937;
 }
 
 /* Botones de respuesta */
@@ -156,7 +167,7 @@ body {
     color: #e5e7eb;
 }
 
-/* Estado final */
+/* Estado final (fase 1) */
 .final-score {
     font-size: 1.1rem;
     font-weight: 600;
@@ -169,10 +180,42 @@ body {
     margin-bottom: 12px;
 }
 
+/* Fase 2: Juego de obstáculos */
+
+.card-game {
+    align-items: center;
+}
+
+#game-canvas {
+    width: 100%;
+    max-width: 360px;
+    border-radius: 12px;
+    background: radial-gradient(circle at top, #1e293b 0%, #020617 60%, #000 100%);
+    border: 1px solid #1e293b;
+}
+
+.game-message {
+    font-size: 0.85rem;
+    color: #cbd5f5;
+    text-align: center;
+    min-height: 36px;
+}
+
+.game-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    max-width: 360px;
+}
+
+.game-controls .btn {
+    flex: 1;
+}
+
 /* Pequeño ajuste para pantallas grandes */
 @media (min-width: 768px) {
     .app {
         padding-top: 32px;
     }
 }
-

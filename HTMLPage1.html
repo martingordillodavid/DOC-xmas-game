@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Prueba DOC + JavaScript</title>
+    <style>
+        body {
+            font-family: system-ui, Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        #mensaje {
+            margin-top: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hola desde el Digital Operations Center</h1>
+    <p>
+        Si ves este texto, el HTML funciona.<br>
+        Si además ves un mensaje más abajo y/o un pop-up, el JavaScript también se está ejecutando.
+    </p>
+
+    <p id="mensaje"></p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mensaje = document.getElementById('mensaje');
+            const ahora = new Date();
+
+            mensaje.textContent = '✅ Script JS activo. Página cargada a las: ' + ahora.toLocaleString();
+
+            alert('JS cargado correctamente desde SharePoint (prueba DOC).');
+        });
+    </script>
+</body>
+</html>

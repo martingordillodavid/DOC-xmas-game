@@ -1,42 +1,63 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Prueba DOC + JavaScript</title>
-    <style>
-        body {
-            font-family: system-ui, Arial, sans-serif;
-            margin: 40px;
-        }
-
-        h1 {
-            font-size: 24px;
-        }
-
-        #mensaje {
-            margin-top: 16px;
-            font-weight: bold;
-        }
-    </style>
+    <title>DOC XMAS Game - Fase 1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Hola desde el Digital Operations Center</h1>
-    <p>
-        Si ves este texto, el HTML funciona.<br>
-        Si además ves un mensaje más abajo y/o un pop-up, el JavaScript también se está ejecutando.
-    </p>
+    <main class="app">
+        <header class="app-header">
+            <h1>DOC XMAS Game</h1>
+            <p class="app-subtitle">Fase 1 · Concienciación energética en casa</p>
+        </header>
 
-    <p id="mensaje"></p>
+        <!-- Contenedor general de fases -->
+        <section id="phase-quiz" class="phase phase--active" aria-label="Fase 1: Quiz energético">
+            <div class="card">
+                <div class="progress">
+                    <span id="question-counter">Pregunta 1/5</span>
+                    <span id="score-counter">Puntuación: 0</span>
+                </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const mensaje = document.getElementById('mensaje');
-            const ahora = new Date();
+                <h2 id="question-text" class="question-text">
+                    Cargando pregunta...
+                </h2>
 
-            mensaje.textContent = '✅ Script JS activo. Página cargada a las: ' + ahora.toLocaleString();
+                <div id="answers-container" class="answers"></div>
 
-            alert('JS cargado correctamente desde SharePoint (prueba DOC).');
-        });
-    </script>
+                <p id="feedback" class="feedback"></p>
+
+                <button id="next-btn" class="btn btn-primary btn-full" disabled>
+                    Siguiente
+                </button>
+            </div>
+        </section>
+
+        <!-- Fase 2: placeholder para el futuro -->
+        <section id="phase-obstacles" class="phase" aria-label="Fase 2: Evita los obstáculos">
+            <div class="card">
+                <h2>Fase 2: Evita los obstáculos</h2>
+                <p>Próximamente: minijuego donde esquivas objetos que caen mientras proteges el consumo energético 🎮</p>
+            </div>
+        </section>
+
+        <!-- Fase 3: placeholder para el futuro -->
+        <section id="phase-xmas" class="phase" aria-label="Fase 3: Xmas resumen">
+            <div class="card">
+                <h2>Fase 3: Xmas resumen</h2>
+                <p>Aquí mostraremos tu puntuación total y un mensaje navideño personalizado 🎄</p>
+            </div>
+        </section>
+
+        <footer class="app-footer">
+            <small>Digital Operations Center · XMAS Edition</small>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
 </body>
 </html>
+
+

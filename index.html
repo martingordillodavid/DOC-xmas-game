@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>DOC XMAS Game - Fase 1</title>
+    <title>DOC XMAS Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -10,10 +10,10 @@
     <main class="app">
         <header class="app-header">
             <h1>DOC XMAS Game</h1>
-            <p class="app-subtitle">Fase 1 ·Concienciación energética en casa</p>
+            <p class="app-subtitle">Fase 1 · Concienciación energética</p>
         </header>
 
-        <!-- Contenedor general de fases -->
+        <!-- Fase 1: Quiz energético -->
         <section id="phase-quiz" class="phase phase--active" aria-label="Fase 1: Quiz energético">
             <div class="card">
                 <div class="progress">
@@ -35,19 +35,36 @@
             </div>
         </section>
 
-        <!-- Fase 2: placeholder para el futuro -->
+        <!-- Fase 2: Juego de obstáculos -->
         <section id="phase-obstacles" class="phase" aria-label="Fase 2: Evita los obstáculos">
-            <div class="card">
-                <h2>Fase 2: Evita los obstáculos</h2>
-                <p>Próximamente: minijuego donde esquivas objetos que caen mientras proteges el consumo energético 🎮</p>
+            <div class="card card-game">
+                <div class="progress">
+                    <span>Fase 2 · Evita los obstáculos</span>
+                    <span id="game-score-label">Puntuación: 0</span>
+                </div>
+
+                <canvas id="game-canvas" width="320" height="480"></canvas>
+
+                <p id="game-message" class="game-message">
+                    Esquiva los bloques que caen. Toca las flechas para moverte y pulsa “Start”.
+                </p>
+
+                <div class="game-controls">
+                    <button id="btn-left" class="btn btn-secondary" type="button">◀</button>
+                    <button id="btn-start-game" class="btn btn-primary" type="button">Start</button>
+                    <button id="btn-right" class="btn btn-secondary" type="button">▶</button>
+                </div>
             </div>
         </section>
 
-        <!-- Fase 3: placeholder para el futuro -->
+        <!-- Fase 3: Xmas resumen (placeholder) -->
         <section id="phase-xmas" class="phase" aria-label="Fase 3: Xmas resumen">
             <div class="card">
                 <h2>Fase 3: Xmas resumen</h2>
-                <p>Aquí mostraremos tu puntuación total y un mensaje navideño personalizado 🎄</p>
+                <p>
+                    Aquí mostraremos tu puntuación total y un mensaje navideño personalizado 🎄  
+                    (Fase aún por desarrollar).
+                </p>
             </div>
         </section>
 
@@ -59,6 +76,8 @@
     <script src="script.js"></script>
 </body>
 </html>
+
+
 
 
 

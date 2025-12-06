@@ -149,7 +149,7 @@ const nextBtnEl = document.getElementById("next-btn");
 
 // Fase 2
 const gameCanvas = document.getElementById("game-canvas");
-const gameCtx = gameCanvas.getContext("2d");
+const gameCtx = gameCanvas ? gameCanvas.getContext("2d") : null;
 const gameScoreLabelEl = document.getElementById("game-score-label");
 const gameMessageEl = document.getElementById("game-message");
 const btnLeftEl = document.getElementById("btn-left");
@@ -169,6 +169,7 @@ function shuffle(array) {
 }
 
 function setPhase(phaseId) {
+    console.log("Cambiando a fase:", phaseId);
     Object.values(phaseElements).forEach((el) => {
         el.classList.remove("phase--active");
     });
@@ -199,6 +200,7 @@ function saveScorePhase2(score) {
 //  Fase 1 - Quiz energético
 // ----------------------------
 function startQuizPhase1() {
+    console.log("Iniciando Fase 1");
     const shuffled = shuffle(QUESTION_BANK);
     state.quiz.questions = shuffled.slice(0, QUESTIONS_PER_GAME);
     state.quiz.currentIndex = 0;
@@ -280,6 +282,7 @@ function handleAnswerClick(selectedIndex) {
 }
 
 function showFinalQuizScreen() {
+    console.log("Fase 1 completada");
     state.quiz.completed = true;
     state.quiz.answered = true;
 
@@ -309,7 +312,6 @@ function showFinalQuizScreen() {
 function handleNextClick() {
     if (state.currentPhase === PHASES.QUIZ) {
         if (!state.quiz.completed) {
-            // Aún estamos en preguntas
             if (!state.quiz.answered) return;
 
             if (state.quiz.currentIndex < state.quiz.questions.length - 1) {
@@ -319,7 +321,7 @@ function handleNextClick() {
                 showFinalQuizScreen();
             }
         } else {
-            // Fase 1 completada -> Pasar a Fase 2
+            // Pasar a Fase 2
             goToObstaclesPhase();
         }
     }
@@ -329,12 +331,18 @@ function handleNextClick() {
 //  Fase 2 - Juego de obstáculos
 // ----------------------------
 function resetGameState() {
+    console.log("Reseteando estado del juego");
     gameState.running = false;
     gameState.elapsedTimeMs = 0;
     gameState.lastFrameTime = 0;
     gameState.lastSpawnTime = 0;
     gameState.obstacles = [];
     gameState.score = 0;
+
+    if (!gameCanvas || !gameCtx) {
+        console.error("Canvas o contexto no disponible");
+        return;
+    }
 
     gameState.playerY = gameConfig.height - gameConfig.playerHeight - 12;
     gameState.playerX = (gameConfig.width - gameConfig.playerWidth) / 2;
@@ -351,12 +359,23 @@ function goToObstaclesPhase() {
 }
 
 function startGame() {
+    console.log("Start game pulsado");
+    if (!gameCanvas || !gameCtx) {
+        console.error("No hay canvas o contexto, no se puede iniciar el juego");
+        return;
+    }
+
     resetGameState();
     gameState.running = true;
     gameMessageEl.textContent = "¡Esquiva los bloques todo lo que puedas!";
+
     const now = performance.now();
     gameState.lastFrameTime = now;
-    gameState.lastSpawnTime = now;
+    gameState.lastSpawnTime = now - gameConfig.spawnIntervalMs; // fuerza un spawn en el primer frame
+
+    // Crea un obstáculo inicial visible
+    spawnObstacle();
+
     if (gameState.rafId) {
         cancelAnimationFrame(gameState.rafId);
     }
@@ -364,6 +383,7 @@ function startGame() {
 }
 
 function stopGame(crashed) {
+    console.log("Juego parado. crashed =", crashed);
     gameState.running = false;
     if (gameState.rafId) {
         cancelAnimationFrame(gameState.rafId);
@@ -380,6 +400,8 @@ function stopGame(crashed) {
 }
 
 function spawnObstacle() {
+    if (!gameCanvas) return;
+
     const x = Math.random() * (gameConfig.width - gameConfig.obstacleWidth);
     const speed =
         gameConfig.obstacleSpeedMin +
@@ -399,14 +421,12 @@ function updateObstacles(deltaSec) {
     for (const obs of gameState.obstacles) {
         obs.y += obs.speed * deltaSec;
 
-        // Colisión con jugador
         if (checkCollision(obs)) {
             stopGame(true);
             return;
         }
 
         if (obs.y > gameConfig.height) {
-            // Superado -> sumar puntos
             gameState.score += 5;
             gameScoreLabelEl.textContent = `Puntuación: ${gameState.score}`;
         } else {
@@ -428,10 +448,11 @@ function checkCollision(obs) {
 }
 
 function drawGame() {
+    if (!gameCtx) return;
+
     const ctx = gameCtx;
     ctx.clearRect(0, 0, gameConfig.width, gameConfig.height);
 
-    // Fondo ligero (ya hay fondo CSS, esto es por si acaso)
     ctx.fillStyle = "rgba(15,23,42,0.8)";
     ctx.fillRect(0, 0, gameConfig.width, gameConfig.height);
 
@@ -459,20 +480,16 @@ function gameLoop(timestamp) {
     gameState.lastFrameTime = timestamp;
     gameState.elapsedTimeMs += deltaMs;
 
-    // Generar obstáculos
     if (timestamp - gameState.lastSpawnTime >= gameConfig.spawnIntervalMs) {
         spawnObstacle();
         gameState.lastSpawnTime = timestamp;
     }
 
-    // Actualizar posiciones y comprobar colisiones
     updateObstacles(deltaSec);
-    if (!gameState.running) return; // Puede haberse parado por colisión
+    if (!gameState.running) return;
 
-    // Dibujar
     drawGame();
 
-    // Tiempo máximo cumplido
     if (gameState.elapsedTimeMs >= gameConfig.maxGameTimeMs) {
         stopGame(false);
         return;
@@ -482,7 +499,6 @@ function gameLoop(timestamp) {
 }
 
 function movePlayer(direction) {
-    // direction -1 izquierda, +1 derecha
     const delta = direction * gameConfig.moveDistance;
     gameState.playerX += delta;
 
@@ -493,7 +509,6 @@ function movePlayer(direction) {
         gameState.playerX = gameConfig.width - gameConfig.playerWidth;
     }
 
-    // Redibuja aunque el juego no esté corriendo, para que se vea el movimiento
     drawGame();
 }
 
@@ -501,27 +516,40 @@ function movePlayer(direction) {
 //  Inicialización
 // ----------------------------
 function init() {
-    // Preparar canvas con tamaño lógico fijo (CSS se encarga del escalado visual)
-    gameCanvas.width = gameConfig.width;
-    gameCanvas.height = gameConfig.height;
+    console.log("Iniciando juego DOC XMAS");
+    if (gameCanvas) {
+        gameCanvas.width = gameConfig.width;
+        gameCanvas.height = gameConfig.height;
+    } else {
+        console.error("No se ha encontrado el canvas con id 'game-canvas'");
+    }
 
-    // Botón "Siguiente" (Fase 1)
-    nextBtnEl.addEventListener("click", handleNextClick);
+    if (nextBtnEl) {
+        nextBtnEl.addEventListener("click", handleNextClick);
+    } else {
+        console.error("No se ha encontrado el botón 'next-btn'");
+    }
 
-    // Controles Fase 2
-    btnStartGameEl.addEventListener("click", () => {
-        startGame();
-    });
+    if (btnStartGameEl) {
+        btnStartGameEl.addEventListener("click", () => {
+            startGame();
+        });
+    } else {
+        console.error("No se ha encontrado el botón 'btn-start-game'");
+    }
 
-    btnLeftEl.addEventListener("click", () => {
-        movePlayer(-1);
-    });
+    if (btnLeftEl) {
+        btnLeftEl.addEventListener("click", () => {
+            movePlayer(-1);
+        });
+    }
 
-    btnRightEl.addEventListener("click", () => {
-        movePlayer(1);
-    });
+    if (btnRightEl) {
+        btnRightEl.addEventListener("click", () => {
+            movePlayer(1);
+        });
+    }
 
-    // Soporte teclado (por si alguien lo abre en PC)
     window.addEventListener("keydown", (e) => {
         if (state.currentPhase !== PHASES.OBSTACLES) return;
         if (e.key === "ArrowLeft") {
@@ -533,11 +561,11 @@ function init() {
         }
     });
 
-    // Empezar en Fase 1
     startQuizPhase1();
 }
 
 document.addEventListener("DOMContentLoaded", init);
+
 
 
 document.addEventListener("DOMContentLoaded", init);
